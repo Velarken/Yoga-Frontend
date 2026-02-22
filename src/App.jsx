@@ -1,33 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
 import './App.css'
+import RoutineDisplay from './components/RoutineDisplay.jsx'
+import Nav from './components/Nav.jsx'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [allPosesData, setAllPosesData] = useState([])
+  const [isLoadingFinished, setIsLoadingFinished] = useState(true)
 
+  const links = [
+    {
+      key: 1,
+      name: 'Home',
+      href: ''
+    },
+    {
+      key: 2,
+      name: 'Quickstart',
+      href: ''
+    },
+    {
+      key: 3,
+      name: 'Routines',
+      href: ''
+    }
+  ]
+  useEffect(() =>{
+    try {
+      const allPosesData = async () => await fetch(
+        `https://yoga-api-js6z.onrender.com/poses`
+      ).then(
+        setAllPosesData(allPosesData)
+      )
+      return allPosesData
+    } catch (error) {
+      console.error(error);
+    } finally {
+        setIsLoadingFinished(!isLoadingFinished);
+    }
+  }, []) 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>Daily Yoga</h1>
+      <Nav links={links}/>
+      {!isLoadingFinished
+      ? (
+        <>
+        ...Loading Content...
+        </>
+      )
+      : (
+        <>
+          <RoutineDisplay />
+        </>
+      )
+      }
     </>
   )
 }
