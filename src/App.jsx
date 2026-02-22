@@ -5,7 +5,7 @@ import Nav from './components/Nav.jsx'
 
 function App() {
   const [allPosesData, setAllPosesData] = useState([])
-  const [isLoadingFinished, setIsLoadingFinished] = useState(true)
+  const [isLoadingFinished, setIsLoadingFinished] = useState(false)
 
   const links = [
     {
@@ -24,20 +24,31 @@ function App() {
       href: ''
     }
   ]
-  useEffect(() =>{
+  useEffect(() => {
     try {
-      const allPosesData = async () => await fetch(
-        `https://yoga-api-js6z.onrender.com/poses`
-      ).then(
-        setAllPosesData(allPosesData)
-      )
-      return allPosesData
+      const fetchData = async () => {
+      fetch(
+          `https://yoga-api-js6z.onrender.com/poses`
+        )
+        .then(async function(response) {
+          const data = await response.json()
+          setAllPosesData(data)
+        })
+        .then(function(response) {
+          console.log('API Data Loaded....loading page...')
+          if (allPosesData !== 'undefined') {
+            setIsLoadingFinished(!isLoadingFinished)
+          }
+          console.log('Error loading API data')
+        })
+      }
+      fetchData();
     } catch (error) {
-      console.error(error);
-    } finally {
-        setIsLoadingFinished(!isLoadingFinished);
+      console.error(error)
     }
-  }, []) 
+  }, [])
+  
+
   return (
     <>
       <h1>Daily Yoga</h1>
@@ -50,7 +61,7 @@ function App() {
       )
       : (
         <>
-          <RoutineDisplay />
+          <RoutineDisplay poseData={allPosesData}/>
         </>
       )
       }
